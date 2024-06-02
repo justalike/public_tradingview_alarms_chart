@@ -102,11 +102,6 @@ async function onVisibleLogicalRangeChanged(newVisibleLogicalRange) {
         updateSeriesOptions(series.vma_5, { color: '#F49212' })
       } else { console.log('Volumes are nullish') }
 
-      // if (extremum && wave && trends) {
-      //   updateChartWithExtremaData(chart, series.extrema_series, extremum)
-      //   updateChartWithWaveData(chart, series.wave_series, series.candles_series, mergedCandles, wave);
-      //   updateChartWithTrendData(chart, mergedCandles, trends)
-      // } else { console.log('Extrema or wave or trends are nullish') }
 
       series.vma_200.priceScale().applyOptions({
         scaleMargins: {
@@ -142,9 +137,6 @@ chart.timeScale().subscribeVisibleLogicalRangeChange(onVisibleLogicalRangeChange
 document.getElementById('loadDataButton').addEventListener('click', async () => {
   try {
     const candlePreloadResult = await throttledPreLoadHistoryCandles(symbol, timeframe)
-    //const linesPreloadResult = await throttledPreLoadHistoryLines(symbol, timeframe)
-
-    // const { extremum, wave, trends } = await throttledGetHistoryLines(symbol, timeframe);
 
     const historicalCandles = await throttledGetHistoryCandles(symbol, timeframe);
     const fetchedCandles = await fetchCandleData(symbol, timeframe)
@@ -170,12 +162,6 @@ document.getElementById('loadDataButton').addEventListener('click', async () => 
 
 
     }
-
-    // if (extremum && wave && trends) {
-    //   updateChartWithExtremaData(chart, series.extrema_series, extremum)
-    //   updateChartWithWaveData(chart, series.wave_series, series.candles_series, mergedCandles, wave);
-    //   updateChartWithTrendData(chart, mergedCandles, trends)
-    // }
 
     series.vma_200.priceScale().applyOptions({
       scaleMargins: {
@@ -207,9 +193,5 @@ document.getElementById('loadDataButton').addEventListener('click', async () => 
 
 });
 
-// document.getElementById('dataFile').addEventListener('change', (event) => {
-//     const file = event.target.files[0];
-//     if (file) handleCandleDataUpload(file, series.candles_series);
-//   });
 
 export { onVisibleLogicalRangeChanged }
