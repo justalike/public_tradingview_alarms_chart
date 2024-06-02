@@ -1,6 +1,6 @@
 // Configuration for the line series used for trends
 export const volumeSeriesConfig = {
-  color: '#26a69a',
+  color: '#26a69a50',
   priceFormat: {
     type: 'volume',
   },

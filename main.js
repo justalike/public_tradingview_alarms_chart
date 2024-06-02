@@ -12,15 +12,10 @@ console.log(`__..--..`.repeat(10))
 const chartContainer = document.getElementById('tvchart');
 const chart = LightweightCharts.createChart(chartContainer, cfg.chartProperties);
 
-
-
 const throttleInterval = 1000; // Throttle interval in milliseconds
 
 const throttledGetHistoryCandles = asyncThrottle(getHistoryCandles, throttleInterval);
 const throttledPreLoadHistoryCandles = asyncThrottle(preLoadHistoryCandles, throttleInterval);
-// const throttledGetHistoryLines = asyncThrottle(getHistoryLines, throttleInterval);
-// const throttledPreLoadHistoryLines = asyncThrottle(preLoadHistoryLines, throttleInterval);
-
 const onVisibleLogicalRangeChangedThrottled = throttle(onVisibleLogicalRangeChanged, throttleInterval);
 
 // Applying global chart options
@@ -33,11 +28,6 @@ chart.applyOptions({
 const seriesTypesAndConfigs = [
   { key: 'candles_series', type: 'candlestick', config: cfg.candleSeriesConfig },
   { key: 'volume_series', type: 'histogram', config: cfg.volumeSeriesConfig },
-  // { key: 'extrema_series', type: 'line', config: cfg.lineSeriesConfig },
-  // { key: 'wave_series', type: 'line', config: cfg.waveSeriesConfig },
-  // { key: 'trend_series', type: 'line', config: cfg.trendLineSeriesConfig },
-  // { key: 'breaktrend_series', type: 'line', config: cfg.breakTrendLineSeriesConfig },
-  // { key: 'ranges_series', type: 'line', config: cfg.rangesSeriesConfig },
   { key: 'historycandles_series', type: 'candlestick', config: cfg.candleSeriesConfig },
   { key: 'historyvolume_series', type: 'histogram', config: cfg.candleSeriesConfig },
   { key: 'vma_200', type: 'line', config: cfg.vmaSeriesConfig },
@@ -58,24 +48,21 @@ document.addEventListener('DOMContentLoaded', connectWebSocket(series));
 
 //Caching historical data for quick retrieval
 document.addEventListener('DOMContentLoaded', throttledPreLoadHistoryCandles(symbol, timeframe))
-// document.addEventListener('DOMContentLoaded', throttledPreLoadHistoryLines(symbol, timeframe))
 
 async function onVisibleLogicalRangeChanged(newVisibleLogicalRange) {
   try {
     const barsInfo = series.candles_series.barsInLogicalRange(newVisibleLogicalRange);
-    // If there are less than 150 bars to the left of the visible area, load more data
+    // If there are less than 100 bars to the left of the visible area, load more data
     if (barsInfo !== null && barsInfo.barsBefore < 100) {
 
       const earliestVisibleTime = chart.timeScale().getVisibleRange().from;
       const startDateForFetch = getCurrentYYMMDD(earliestVisibleTime * 1000); // back to ms
 
+      //speeds up the api, so it would have some ready data in cache
       const candlePreloadResult = await throttledPreLoadHistoryCandles(symbol, timeframe, startDateForFetch)
-      // const linesPreloadResult = await throttledPreLoadHistoryLines(symbol, timeframe)
 
       const historicalCandles = await throttledGetHistoryCandles(symbol, timeframe);
       const fetchedCandles = await fetchCandleData(symbol, timeframe)
-
-      // const { extremum, wave, trends } = await throttledGetHistoryLines(symbol, timeframe);
 
       const mergedCandles = fetchedCandles ? [...historicalCandles
         .filter(candle => candle.time < fetchedCandles[0].time),
