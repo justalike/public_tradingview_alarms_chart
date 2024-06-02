@@ -3,7 +3,7 @@ import * as cfg from './config/index.js';
 import { throttle, asyncThrottle } from './utils/throttle.js';
 import { createSeries, updateSeriesData, setChartSize, getQueryParams, getCurrentYYMMDD, calculateVMA, updateSeriesOptions } from './utils/utils.js';
 import { initializeChartWithData, } from './chart/chartUpdateService.js';
-import { fetchCandleData, getHistoryCandles, preLoadHistoryCandles, getHistoryLines, preLoadHistoryLines } from './api/dataService.js';
+import { fetchCandleData, getHistoryCandles, preLoadHistoryCandles } from './api/dataService.js';
 import { connectWebSocket } from './api/ws.js';
 
 
@@ -75,7 +75,7 @@ async function onVisibleLogicalRangeChanged(newVisibleLogicalRange) {
       const historicalCandles = await throttledGetHistoryCandles(symbol, timeframe);
       const fetchedCandles = await fetchCandleData(symbol, timeframe)
 
-      const { extremum, wave, trends } = await throttledGetHistoryLines(symbol, timeframe);
+      // const { extremum, wave, trends } = await throttledGetHistoryLines(symbol, timeframe);
 
       const mergedCandles = fetchedCandles ? [...historicalCandles
         .filter(candle => candle.time < fetchedCandles[0].time),
